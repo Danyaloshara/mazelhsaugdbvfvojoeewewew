@@ -1,5 +1,5 @@
 import pygame
-
+import sleep
 pygame.init()
 
 window = pygame.display.set_mode((800, 600))
@@ -16,6 +16,13 @@ pygame.mixer.music.play()
 
 kick = pygame.mixer.Sound('kick.ogg')
 money = pygame.mixer.Sound('money.ogg')
+
+pygame.font.init()
+font = pygame.font.SysFont("Arial", 64)
+
+win = font.render('You win', True, 'white')
+lose = font.render('You lose', True, 'white')
+
 
 class GameStrite(pygame.sprite.Sprite):
     def __init__(self, image, x ,y , speed):
@@ -55,6 +62,25 @@ class Enemy(GameStrite):
         else:
             self.rect.x -= self.speed
 
+class Wall(pygame.sprite.Sprite):
+    def __init__(self, r,g,b,x,y,widht,height):
+        super().__init__()
+        self.red = r
+        self.g = g
+        self.b = b
+        self.width = widht
+        self.height = height  
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill((self.red, self.green, self.blue))
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+
+    def draw_wall(self):
+        window.blit(self.image, (self.rect.x, self.rect.y))
+w1 = Wall(255,255,255,150,150,250,50)
+w2 = Wall(255,255,255,150,150,)
+
 hero = Player('hero.png', 100,100,5)
 enemy = Enemy('cyborg.png',200,200,10)
 treasure = GameStrite('treasure.png',500,500,0)
@@ -75,7 +101,32 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
 
-    
+        w1.draw_wall()
+
+    player.draw()
+    player.update()
+
+    enemy.darw()
+    enemy.update()
+
+    treasure.darw()
+
+    if pygame.sprite.collide_rect(player, enemy):
+        window.blit(lose, (400, 300))
+        kick.play()
+        sleep(3)
+        running = False
+
+    if pygame.sprite.collide_rect(player, treasure):
+        window.blit(win, (400, 300))
+        money.play()
+        sleep(3)
+        running = False
+
+    if pygame.sprite.collide_rect(player1, w1):
+        player.rect.x = 50
+        player.rect.y = 100
+
     pygame.display.update()
     clock.tick(60)
 
